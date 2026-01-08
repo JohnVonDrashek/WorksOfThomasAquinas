@@ -190,19 +190,17 @@ const { title, description } = Astro.props;
       margin: 2rem 0;
     }
 
-    /* Center blocks */
+    /* Center blocks - used for headings and layout, not emphasis */
     .legacy-content :global(center) {
       margin: 1rem 0;
-      font-style: italic;
-      color: var(--color-text-muted);
     }
 
-    /* Blockquotes */
+    /* Blockquotes - legacy HTML uses these as layout containers, not actual quotes */
     .legacy-content :global(blockquote) {
       margin: 1rem 0;
-      padding-left: 1.5rem;
-      border-left: 3px solid var(--color-accent);
-      font-style: italic;
+      padding-left: 0;
+      border-left: none;
+      font-style: normal;
     }
 
     /* Definition lists (used in some works) */
