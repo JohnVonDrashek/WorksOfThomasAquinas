@@ -17,6 +17,11 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
     <title>{fullTitle}</title>
     <link rel="canonical" href={Astro.url} />
 
+    <!-- Google Fonts: Cinzel for headings, EB Garamond for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+
     <!-- Open Graph / Social -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={fullTitle} />
@@ -24,22 +29,57 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
     <meta property="og:site_name" content="Works of Thomas Aquinas" />
 
     <!-- Theme color for mobile browsers -->
-    <meta name="theme-color" content="#fffef8" />
+    <meta name="theme-color" content="#faf9f7" />
 
     <style is:global>
       :root {
-        --color-bg: #fffef8;
-        --color-bg-alt: #fff8e7;
-        --color-text: #2d2a24;
-        --color-text-muted: #5c5650;
-        --color-link: #8b4513;
-        --color-link-hover: #a0522d;
-        --color-border: #e8e0d0;
+        /* Color Palette - Scholarly earth tones */
+        --color-bg: #faf9f7;
+        --color-bg-alt: #f5f3ef;
+        --color-bg-card: #ffffff;
+        --color-text: #2c2c2c;
+        --color-text-muted: #666666;
+        --color-accent: #8b4513;
+        --color-accent-hover: #a0522d;
+        --color-burgundy: #6b2d3a;
+        --color-navy: #2c4a6e;
+        --color-gold: #8b6914;
+        --color-border: #e0d8cf;
+        --color-border-light: #ebe6df;
+        --color-highlight: #fff8e7;
         --color-focus: #4a90d9;
-        --font-serif: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+        --color-shadow: rgba(0, 0, 0, 0.08);
+
+        /* Typography */
+        --font-heading: 'Cinzel', 'Palatino Linotype', Palatino, serif;
+        --font-body: 'EB Garamond', 'Palatino Linotype', Palatino, Georgia, serif;
         --font-sans: system-ui, -apple-system, sans-serif;
+
+        /* Layout */
         --max-width: 900px;
-        --line-height: 1.7;
+        --line-height: 1.75;
+
+        /* Transitions */
+        --transition-fast: 0.2s ease;
+        --transition-normal: 0.3s ease;
+      }
+
+      /* Dark mode */
+      [data-theme="dark"] {
+        --color-bg: #1a1a1a;
+        --color-bg-alt: #242424;
+        --color-bg-card: #2a2a2a;
+        --color-text: #e8e6e3;
+        --color-text-muted: #a0a0a0;
+        --color-accent: #c9a868;
+        --color-accent-hover: #dbb978;
+        --color-burgundy: #c17a8a;
+        --color-navy: #7a9bc4;
+        --color-gold: #c9a868;
+        --color-border: #3a3530;
+        --color-border-light: #333333;
+        --color-highlight: #2a2520;
+        --color-shadow: rgba(0, 0, 0, 0.3);
       }
 
       *,
@@ -54,19 +94,19 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
       }
 
       html {
-        font-size: 18px;
+        font-size: 19px;
         line-height: var(--line-height);
         scroll-behavior: smooth;
       }
 
       @media (max-width: 600px) {
         html {
-          font-size: 16px;
+          font-size: 17px;
         }
       }
 
       body {
-        font-family: var(--font-serif);
+        font-family: var(--font-body);
         background-color: var(--color-bg);
         color: var(--color-text);
         min-height: 100vh;
@@ -83,13 +123,14 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
       }
 
       a {
-        color: var(--color-link);
+        color: var(--color-accent);
         text-decoration: none;
         text-underline-offset: 0.15em;
+        transition: color var(--transition-fast);
       }
 
       a:hover {
-        color: var(--color-link-hover);
+        color: var(--color-accent-hover);
         text-decoration: underline;
       }
 
@@ -105,6 +146,7 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
         border-radius: 0 0 4px 4px;
         z-index: 100;
         font-size: 0.875rem;
+        font-family: var(--font-sans);
       }
 
       .skip-link:focus {
@@ -115,7 +157,7 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
         flex: 1;
         max-width: var(--max-width);
         margin: 0 auto;
-        padding: 2rem 1.5rem;
+        padding: 2.5rem 1.5rem;
         width: 100%;
       }
 
@@ -126,19 +168,22 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
       }
 
       h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+        font-weight: 500;
         line-height: 1.3;
         margin-bottom: 0.5em;
-        font-weight: 600;
+        letter-spacing: 0.02em;
       }
 
       h1 {
-        font-size: 2rem;
-        letter-spacing: -0.02em;
+        font-size: 2.25rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
       }
 
       h2 {
         font-size: 1.5rem;
-        letter-spacing: -0.01em;
+        color: var(--color-accent);
       }
 
       h3 {
@@ -162,13 +207,40 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
 
       /* Selection styling */
       ::selection {
-        background-color: #d4c4a8;
-        color: var(--color-text);
+        background-color: var(--color-accent);
+        color: #ffffff;
+      }
+
+      /* Decorative divider */
+      .divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin: 2rem 0;
+        color: var(--color-text-muted);
+      }
+
+      .divider::before,
+      .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(to var(--dir, right), var(--color-border), transparent);
+      }
+
+      .divider::after {
+        --dir: left;
+      }
+
+      .divider-ornament {
+        font-size: 1.25rem;
+        color: var(--color-accent);
       }
 
       /* Print styles */
       @media print {
-        .nav, .footer, .skip-link {
+        .nav, .footer, .skip-link, .theme-toggle {
           display: none;
         }
 
@@ -185,11 +257,19 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
     <header role="banner">
       <nav class="nav" aria-label="Main navigation">
         <div class="nav-inner">
-          <a href="/" class="nav-brand">Works of Thomas Aquinas</a>
-          <ul class="nav-links" role="list">
-            <li><a href="/works/">Works</a></li>
-            <li><a href="/thomas/">Legacy Index</a></li>
-          </ul>
+          <a href="/" class="nav-brand">
+            <span class="brand-text">Works of Thomas Aquinas</span>
+          </a>
+          <div class="nav-right">
+            <ul class="nav-links" role="list">
+              <li><a href="/works/">Works</a></li>
+              <li><a href="/thomas/">Legacy Index</a></li>
+            </ul>
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+              <span class="theme-icon-light">&#9788;</span>
+              <span class="theme-icon-dark">&#9790;</span>
+            </button>
+          </div>
         </div>
       </nav>
     </header>
@@ -200,12 +280,13 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
 
     <footer class="footer" role="contentinfo">
       <div class="footer-inner">
+        <div class="footer-ornament">&#10087;</div>
         <p>
           Originally compiled by <a href="http://www.dhspriory.org/kenny">Fr. Joseph Kenny, O.P.</a> (1936-2013)
         </p>
-        <p>
+        <p class="footer-links">
           <a href="https://docs.google.com/forms/d/18taBhNWbW7525BkD_eItBsEhrqrRcmB7n4yLPsrGeLo/viewform">Submit Feedback</a>
-          &bull;
+          <span class="footer-separator">&bull;</span>
           <a href="http://www.corpusthomisticum.org/iopera.html">Corpus Thomisticum</a>
         </p>
       </div>
@@ -235,39 +316,108 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
       }
 
       .nav-brand {
-        font-size: 1.25rem;
+        text-decoration: none;
+        transition: opacity var(--transition-fast);
+      }
+
+      .nav-brand:hover {
+        text-decoration: none;
+        opacity: 0.8;
+      }
+
+      .brand-text {
+        font-family: var(--font-heading);
+        font-size: 1.35rem;
         font-weight: 600;
+        letter-spacing: 0.05em;
+        color: var(--color-text);
       }
 
       @media (max-width: 600px) {
-        .nav-brand {
+        .brand-text {
           font-size: 1.1rem;
         }
+      }
+
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
       }
 
       .nav-links {
         display: flex;
         gap: 1.5rem;
         list-style: none;
+        font-family: var(--font-heading);
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .nav-links a {
+        color: var(--color-text-muted);
+        padding: 0.25rem 0;
+        border-bottom: 2px solid transparent;
+        transition: all var(--transition-fast);
+      }
+
+      .nav-links a:hover {
+        color: var(--color-accent);
+        text-decoration: none;
+        border-bottom-color: var(--color-accent);
       }
 
       @media (max-width: 600px) {
         .nav-links {
           gap: 1rem;
-          font-size: 0.95rem;
+          font-size: 0.8rem;
         }
+      }
+
+      .theme-toggle {
+        background: none;
+        border: 1px solid var(--color-border);
+        border-radius: 50%;
+        width: 2.25rem;
+        height: 2.25rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: var(--color-text-muted);
+        transition: all var(--transition-fast);
+      }
+
+      .theme-toggle:hover {
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+        transform: rotate(15deg);
+      }
+
+      .theme-icon-dark {
+        display: none;
+      }
+
+      [data-theme="dark"] .theme-icon-light {
+        display: none;
+      }
+
+      [data-theme="dark"] .theme-icon-dark {
+        display: inline;
       }
 
       .footer {
         background-color: var(--color-bg-alt);
         border-top: 1px solid var(--color-border);
-        padding: 2rem 1.5rem;
+        padding: 2.5rem 1.5rem;
         margin-top: auto;
       }
 
       @media (max-width: 600px) {
         .footer {
-          padding: 1.5rem 1rem;
+          padding: 2rem 1rem;
         }
       }
 
@@ -276,7 +426,14 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
         margin: 0 auto;
         text-align: center;
         color: var(--color-text-muted);
-        font-size: 0.875rem;
+        font-size: 0.9rem;
+      }
+
+      .footer-ornament {
+        font-size: 1.5rem;
+        color: var(--color-accent);
+        margin-bottom: 1rem;
+        opacity: 0.7;
       }
 
       .footer p {
@@ -286,6 +443,42 @@ const fullTitle = title === 'Home' ? 'Works of Thomas Aquinas' : `${title} | Wor
       .footer p:last-child {
         margin-bottom: 0;
       }
+
+      .footer-links {
+        margin-top: 0.5rem;
+      }
+
+      .footer-separator {
+        margin: 0 0.5rem;
+        color: var(--color-border);
+      }
     </style>
+
+    <script is:inline>
+      // Theme toggle functionality
+      (function() {
+        const toggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+
+        // Check for saved preference or system preference
+        const savedTheme = localStorage.getItem('theme');
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+          html.setAttribute('data-theme', 'dark');
+        }
+
+        toggle?.addEventListener('click', () => {
+          const isDark = html.getAttribute('data-theme') === 'dark';
+          if (isDark) {
+            html.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+          } else {
+            html.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+          }
+        });
+      })();
+    </script>
   </body>
 </html>

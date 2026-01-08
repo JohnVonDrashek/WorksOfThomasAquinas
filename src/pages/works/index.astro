@@ -26,6 +26,16 @@ const categoryLabels: Record<string, string> = {
   'popular': 'Popular Works',
 };
 
+const categoryDescriptions: Record<string, string> = {
+  'major-theological': 'The great systematic theological works',
+  'quaestiones-disputatae': 'Disputed questions on theological topics',
+  'opuscula': 'Shorter philosophical and theological treatises',
+  'aristotle-commentary': 'Commentaries on the works of Aristotle',
+  'biblical-commentary': 'Commentaries on Sacred Scripture',
+  'other-commentary': 'Commentaries on other philosophical works',
+  'popular': 'Catechetical and devotional writings',
+};
+
 const categoryLabelsShort: Record<string, string> = {
   'major-theological': 'Major',
   'quaestiones-disputatae': 'Quaestiones',
@@ -62,88 +72,187 @@ const filterCategories = categoryOrder
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <ol>
       <li><a href="/">Home</a></li>
+      <li><span class="separator">&#10095;</span></li>
       <li aria-current="page">Works</li>
     </ol>
   </nav>
 
-  <h1>Works of St. Thomas Aquinas</h1>
-  <p class="intro">
-    Browse the complete collection of available texts. Works marked "Latin &amp; English" present
-    the original Latin alongside English translation.
-  </p>
+  <header class="page-header">
+    <h1>Works of St. Thomas Aquinas</h1>
+    <p class="intro">
+      Browse the complete collection of available texts. Works marked with
+      <span class="badge-example">LA + EN</span> present the original Latin alongside English translation.
+    </p>
+  </header>
 
   <WorksFilter categories={filterCategories} />
 
-  {categoryOrder.map((category) => {
-    const categoryWorks = worksByCategory[category];
-    if (!categoryWorks || categoryWorks.length === 0) return null;
+  <div class="works-content">
+    {categoryOrder.map((category) => {
+      const categoryWorks = worksByCategory[category];
+      if (!categoryWorks || categoryWorks.length === 0) return null;
 
-    return (
-      <section class="category-section" id={category}>
-        <h2>{categoryLabels[category]}</h2>
-        <div class="works-grid">
-          {categoryWorks.map((work) => (
-            <WorkCard
-              id={work.id}
-              title={work.data.title}
-              latinTitle={work.data.latinTitle}
-              category={work.data.category}
-              latinEnglishPath={work.data.languages.latinEnglish}
-              englishPath={work.data.languages.english}
-              restricted={work.data.restricted}
-            />
-          ))}
-        </div>
-      </section>
-    );
-  })}
+      return (
+        <section class="category-section" id={category}>
+          <div class="category-header">
+            <div class="category-title-wrapper">
+              <h2>{categoryLabels[category]}</h2>
+              <span class="category-count">{categoryWorks.length} works</span>
+            </div>
+            <p class="category-description">{categoryDescriptions[category]}</p>
+          </div>
+          <div class="works-grid">
+            {categoryWorks.map((work) => (
+              <WorkCard
+                id={work.id}
+                title={work.data.title}
+                latinTitle={work.data.latinTitle}
+                category={work.data.category}
+                latinEnglishPath={work.data.languages.latinEnglish}
+                englishPath={work.data.languages.english}
+                restricted={work.data.restricted}
+              />
+            ))}
+          </div>
+        </section>
+      );
+    })}
+  </div>
 
   <style>
     .breadcrumb {
-      margin-bottom: 1.5rem;
-      font-size: 0.875rem;
+      margin-bottom: 2rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
     }
 
     .breadcrumb ol {
       display: flex;
       flex-wrap: wrap;
       list-style: none;
+      align-items: center;
       gap: 0.5rem;
     }
 
-    .breadcrumb li:not(:last-child)::after {
-      content: '/';
-      margin-left: 0.5rem;
+    .breadcrumb a {
       color: var(--color-text-muted);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .breadcrumb a:hover {
+      color: var(--color-accent);
+      text-decoration: underline;
+    }
+
+    .breadcrumb .separator {
+      color: var(--color-border);
+      font-size: 0.7rem;
     }
 
     .breadcrumb li[aria-current="page"] {
-      color: var(--color-text-muted);
+      color: var(--color-text);
+      font-weight: 500;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--color-border);
     }
 
     h1 {
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
     }
 
     .intro {
       color: var(--color-text-muted);
-      margin-bottom: 2rem;
+      max-width: 550px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .badge-example {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 0.15rem 0.35rem;
+      background-color: var(--color-accent);
+      color: #ffffff;
+      border-radius: 2px;
+      vertical-align: middle;
+    }
+
+    .works-content {
+      margin-top: 1rem;
     }
 
     .category-section {
-      margin-bottom: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .category-header {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--color-border);
+    }
+
+    .category-title-wrapper {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
     }
 
     .category-section h2 {
-      border-bottom: 1px solid var(--color-border);
-      padding-bottom: 0.5rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0;
+      color: var(--color-text);
+    }
+
+    .category-count {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      background-color: var(--color-bg-alt);
+      padding: 0.25rem 0.625rem;
+      border-radius: 12px;
+    }
+
+    .category-description {
+      font-style: italic;
+      color: var(--color-text-muted);
+      font-size: 0.95rem;
+      margin: 0;
     }
 
     .works-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 600px) {
+      .page-header {
+        text-align: left;
+      }
+
+      .intro {
+        margin: 0;
+      }
+
+      .category-title-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .works-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </Base>

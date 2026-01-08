@@ -20,76 +20,227 @@ const categoryLabels: Record<string, string> = {
   'other-commentary': 'Other Commentary',
   'popular': 'Popular Works',
 };
+
+const hasLatinEnglish = !!latinEnglishPath;
+const hasEnglishOnly = !!englishPath;
 ---
 
-<article class="work-card">
-  <h3 class="title">
-    <a href={`/works/${id}/`}>{title}</a>
-  </h3>
-  {latinTitle && <p class="latin-title">{latinTitle}</p>}
-  <p class="category">{categoryLabels[category] || category}</p>
+<article class="work-card" data-category={category}>
+  <div class="card-content">
+    <div class="card-header">
+      <h3 class="title">
+        <a href={`/works/${id}/`}>
+          <span class="title-text">{title}</span>
+          <span class="title-arrow">&#8594;</span>
+        </a>
+      </h3>
+      {latinTitle && <p class="latin-title">{latinTitle}</p>}
+    </div>
 
-  <div class="links">
-    {latinEnglishPath && (
-      <a href={latinEnglishPath}>
-        Latin &amp; English
-        {restricted && <span class="restricted">(restricted)</span>}
-      </a>
-    )}
-    {englishPath && (
-      <a href={englishPath}>English only</a>
-    )}
+    <div class="card-meta">
+      <span class="category-badge">{categoryLabels[category] || category}</span>
+      <div class="language-badges">
+        {hasLatinEnglish && (
+          <span class="lang-badge lang-latin" title="Latin & English available">
+            LA + EN
+          </span>
+        )}
+        {hasEnglishOnly && !hasLatinEnglish && (
+          <span class="lang-badge lang-english" title="English only">
+            EN
+          </span>
+        )}
+        {restricted && (
+          <span class="restricted-badge" title="Restricted access">&#128274;</span>
+        )}
+      </div>
+    </div>
+
+    <div class="card-links">
+      {latinEnglishPath && (
+        <a href={latinEnglishPath} class="text-link">
+          <span class="link-icon">&#128214;</span>
+          Read Latin &amp; English
+        </a>
+      )}
+      {englishPath && (
+        <a href={englishPath} class="text-link">
+          <span class="link-icon">&#128196;</span>
+          English Translation
+        </a>
+      )}
+    </div>
   </div>
+
+  <div class="card-decoration"></div>
 </article>
 
 <style>
   .work-card {
-    padding: 1rem;
-    background-color: var(--color-bg-alt);
+    position: relative;
+    background-color: var(--color-bg-card);
     border: 1px solid var(--color-border);
     border-radius: 4px;
+    overflow: hidden;
+    transition: all var(--transition-normal);
+  }
+
+  .work-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--color-shadow);
+  }
+
+  .work-card:hover .card-decoration {
+    transform: scaleX(1);
+  }
+
+  .work-card:hover .title-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .work-card:hover .title-text {
+    color: var(--color-accent);
+  }
+
+  .card-content {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .card-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-gold));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--transition-normal);
+  }
+
+  .card-header {
+    flex: 1;
   }
 
   .title {
-    font-size: 1.125rem;
+    font-size: 1.1rem;
     margin-bottom: 0.25rem;
+    line-height: 1.4;
   }
 
   .title a {
     color: var(--color-text);
     text-decoration: none;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 
   .title a:hover {
-    color: var(--color-link);
-    text-decoration: underline;
+    text-decoration: none;
+  }
+
+  .title-text {
+    flex: 1;
+    transition: color var(--transition-fast);
+  }
+
+  .title-arrow {
+    flex-shrink: 0;
+    font-size: 1rem;
+    color: var(--color-accent);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all var(--transition-fast);
   }
 
   .latin-title {
     font-style: italic;
     color: var(--color-text-muted);
     font-size: 0.9rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
+    line-height: 1.4;
   }
 
-  .category {
-    font-size: 0.75rem;
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .category-badge {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     color: var(--color-text-muted);
-    margin-bottom: 0.75rem;
+    background-color: var(--color-bg-alt);
+    padding: 0.25rem 0.5rem;
+    border-radius: 2px;
   }
 
-  .links {
+  .language-badges {
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+  }
+
+  .lang-badge {
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.2rem 0.4rem;
+    border-radius: 2px;
+  }
+
+  .lang-latin {
+    background-color: var(--color-accent);
+    color: #ffffff;
+  }
+
+  .lang-english {
+    background-color: var(--color-navy);
+    color: #ffffff;
+  }
+
+  .restricted-badge {
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+
+  .card-links {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
-    font-size: 0.9rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-border-light);
   }
 
-  .restricted {
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-    margin-left: 0.25rem;
+  .text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .text-link:hover {
+    color: var(--color-accent-hover);
+    text-decoration: underline;
+  }
+
+  .link-icon {
+    font-size: 0.9rem;
+    opacity: 0.8;
   }
 </style>
