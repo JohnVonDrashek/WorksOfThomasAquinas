@@ -102,31 +102,6 @@ const { title, description } = Astro.props;
       padding-left: 1.5rem;
     }
 
-    /* Add column headers via CSS */
-    .legacy-content :global(table:first-of-type tr:first-child td:first-child::before) {
-      content: 'LATIN';
-      display: block;
-      font-family: var(--font-heading);
-      font-size: 0.7rem;
-      font-style: normal;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      color: var(--color-accent);
-      margin-bottom: 0.75rem;
-      opacity: 0.8;
-    }
-
-    .legacy-content :global(table:first-of-type tr:first-child td:last-child::before) {
-      content: 'ENGLISH';
-      display: block;
-      font-family: var(--font-heading);
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      color: var(--color-accent);
-      margin-bottom: 0.75rem;
-      opacity: 0.8;
-    }
 
     /* Bold text styling (often used for objections, replies) */
     .legacy-content :global(b),
@@ -284,36 +259,6 @@ const { title, description } = Astro.props;
 
       .legacy-content :global(td:last-child) {
         padding-left: 0;
-      }
-
-      /* Mobile column labels */
-      .legacy-content :global(td:first-child::before) {
-        content: 'LATIN';
-        display: block;
-        font-family: var(--font-heading);
-        font-size: 0.65rem;
-        font-style: normal;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        color: var(--color-accent);
-        margin-bottom: 0.5rem;
-      }
-
-      .legacy-content :global(td:last-child::before) {
-        content: 'ENGLISH';
-        display: block;
-        font-family: var(--font-heading);
-        font-size: 0.65rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        color: var(--color-accent);
-        margin-bottom: 0.5rem;
-      }
-
-      /* Remove duplicate labels on first row */
-      .legacy-content :global(table:first-of-type tr:first-child td:first-child::before),
-      .legacy-content :global(table:first-of-type tr:first-child td:last-child::before) {
-        display: block;
       }
 
       /* Smaller nav blocks on mobile */
