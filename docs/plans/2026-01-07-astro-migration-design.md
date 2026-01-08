@@ -13,7 +13,7 @@ Migrate the Works of Thomas Aquinas static HTML site to Astro while preserving a
 ## Project Structure
 
 ```
-dhspriory.github.io/
+johnvondrashek.github.io/
 ├── src/
 │   ├── pages/
 │   │   ├── index.astro              # Home page
