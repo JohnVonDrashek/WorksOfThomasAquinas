@@ -123,20 +123,23 @@ if (fs.existsSync(filePath)) {
   htmlContent = htmlContent
     .replace(/\s*bgcolor="[^"]*"/gi, '')
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-    // Fix relative links
-    .replace(/href="\.\.\/([^"]+)"/gi, 'href="/thomas/summa/$1"')
+    // Fix relative links and strip .htm/.html extensions
+    .replace(/href="\.\.\/([^"]+)"/gi, (match, p1) => {
+      const cleanPath = p1.replace(/\.(html?)(#.*)?$/i, '$2');
+      return `href="/thomas/summa/${cleanPath}"`;
+    })
     .replace(/href="([^/"#][^"#]*)"/gi, (match, p1) => {
       if (!p1.startsWith('http') && !p1.startsWith('/') && !p1.startsWith('#')) {
         const currentDir = urlPath ? path.dirname(urlPath) : '';
+        // Strip .htm/.html extension, preserve hash fragment
+        const cleanFile = p1.replace(/\.(html?)(#.*)?$/i, '$2');
         if (currentDir && currentDir !== '.') {
-          return `href="/thomas/summa/${currentDir}/${p1}"`;
+          return `href="/thomas/summa/${currentDir}/${cleanFile}"`;
         }
-        return `href="/thomas/summa/${p1}"`;
+        return `href="/thomas/summa/${cleanFile}"`;
       }
       return match;
-    })
-    // Remove .html extensions from internal links for clean URLs
-    .replace(/href="(\/thomas\/summa\/[^"#]+)\.html([#"][^"]*)?"/gi, 'href="$1$2"');
+    });
 } else {
   htmlContent = '<p>Content not found.</p>';
 }

@@ -134,12 +134,19 @@ if (fs.existsSync(filePath)) {
     // Remove old style tags embedded in body
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
     // Fix relative links to work from new URL structure
-    .replace(/href="\.\.\/([^"]+)"/gi, 'href="/thomas/$1"')
+    .replace(/href="\.\.\/([^"]+)"/gi, (match, p1) => {
+      // Strip .htm/.html extension and convert to clean URL
+      const cleanPath = p1.replace(/\.(html?)(#.*)?$/i, '$2');
+      return `href="/thomas/${cleanPath}"`;
+    })
     .replace(/href="([^/"#][^"#]*)"/gi, (match, p1) => {
       // Handle relative links within same directory
       if (!p1.startsWith('http') && !p1.startsWith('/') && !p1.startsWith('#')) {
         const currentDir = urlPath ? path.dirname(urlPath) : '';
-        const newPath = currentDir ? `${currentDir}/${p1}` : p1;
+        // Strip .htm/.html extension, preserve hash fragment
+        const cleanFile = p1.replace(/\.(html?)(#.*)?$/i, '$2');
+        // Only prepend currentDir if it's a real directory (not '.')
+        const newPath = (currentDir && currentDir !== '.') ? `${currentDir}/${cleanFile}` : cleanFile;
         return `href="/thomas/${newPath}"`;
       }
       return match;
