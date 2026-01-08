@@ -1,0 +1,27 @@
+---
+import Base from '@/layouts/Base.astro';
+import PartIndex from '@/components/summa/PartIndex.astro';
+import { SUMMA_PARTS } from '@/lib/summa/parser';
+import { getPartPaths, getQuestionInfoForPart } from '@/lib/summa/loader';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return getPartPaths();
+}
+
+const { part } = Astro.params;
+
+// Validate part
+if (!part || !(part in SUMMA_PARTS)) {
+  return Astro.redirect('/thomas/summa');
+}
+
+const partKey = part as keyof typeof SUMMA_PARTS;
+const partInfo = SUMMA_PARTS[partKey];
+const questions = getQuestionInfoForPart(partKey);
+---
+
+<Base title={`${partInfo.name} | Summa Theologica`} description={`${partInfo.name} (${partInfo.latin}) of the Summa Theologica`}>
+  <PartIndex part={partKey} questions={questions} />
+</Base>

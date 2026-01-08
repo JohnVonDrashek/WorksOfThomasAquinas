@@ -1,0 +1,43 @@
+---
+import Base from '@/layouts/Base.astro';
+import ArticleContent from '@/components/summa/ArticleContent.astro';
+import { SUMMA_PARTS } from '@/lib/summa/parser';
+import { getArticlePaths, loadQuestion, getArticle } from '@/lib/summa/loader';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return getArticlePaths();
+}
+
+const { part, question: questionStr, article: articleStr } = Astro.params;
+const questionNum = parseInt(questionStr || '1', 10);
+const articleNum = parseInt(articleStr || '1', 10);
+
+// Validate
+if (!part || !(part in SUMMA_PARTS)) {
+  return Astro.redirect('/thomas/summa');
+}
+
+const partKey = part as keyof typeof SUMMA_PARTS;
+const partInfo = SUMMA_PARTS[partKey];
+const question = loadQuestion(part, questionNum);
+
+if (!question) {
+  return Astro.redirect(`/thomas/summa/${part}`);
+}
+
+const article = getArticle(part, questionNum, articleNum);
+
+if (!article) {
+  return Astro.redirect(`/thomas/summa/${part}/Q${questionNum}`);
+}
+
+const pageTitle = article.title
+  ? `${article.title} | Q${questionNum}, A${articleNum}`
+  : `Article ${articleNum} | Question ${questionNum}`;
+---
+
+<Base title={`${pageTitle} | Summa Theologica`} description={`${article.title || `Article ${articleNum}`} - from Question ${questionNum} of the ${partInfo.name}`}>
+  <ArticleContent article={article} totalArticles={question.articles.length} />
+</Base>

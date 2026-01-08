@@ -1,0 +1,32 @@
+---
+import Base from '@/layouts/Base.astro';
+import QuestionIndex from '@/components/summa/QuestionIndex.astro';
+import { SUMMA_PARTS } from '@/lib/summa/parser';
+import { getQuestionPaths, loadQuestion } from '@/lib/summa/loader';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return getQuestionPaths();
+}
+
+const { part, question: questionStr } = Astro.params;
+const questionNum = parseInt(questionStr || '1', 10);
+
+// Validate
+if (!part || !(part in SUMMA_PARTS)) {
+  return Astro.redirect('/thomas/summa');
+}
+
+const partKey = part as keyof typeof SUMMA_PARTS;
+const partInfo = SUMMA_PARTS[partKey];
+const question = loadQuestion(part, questionNum);
+
+if (!question) {
+  return Astro.redirect(`/thomas/summa/${part}`);
+}
+---
+
+<Base title={`Question ${questionNum}: ${question.title} | Summa Theologica`} description={`${question.title} - Question ${questionNum} of the ${partInfo.name}`}>
+  <QuestionIndex question={question} totalQuestions={partInfo.questions} />
+</Base>

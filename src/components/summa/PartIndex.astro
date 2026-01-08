@@ -1,0 +1,225 @@
+---
+import { getQuestionUrl, SUMMA_PARTS } from '../../lib/summa/parser';
+
+interface QuestionInfo {
+  number: number;
+  title: string;
+  articleCount: number;
+}
+
+interface Props {
+  part: keyof typeof SUMMA_PARTS;
+  questions: QuestionInfo[];
+}
+
+const { part, questions } = Astro.props;
+
+const partInfo = SUMMA_PARTS[part];
+const allParts = Object.entries(SUMMA_PARTS);
+---
+
+<div class="part-page">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/thomas/summa">Summa Theologica</a>
+    <span class="sep">›</span>
+    <span class="current">{partInfo.name}</span>
+  </nav>
+
+  <!-- Part Header -->
+  <header class="part-header">
+    <div class="part-label">{partInfo.latin}</div>
+    <h1 class="part-title">{partInfo.name}</h1>
+    <p class="part-meta">{questions.length} Questions</p>
+  </header>
+
+  <!-- Part Tabs -->
+  <nav class="part-tabs">
+    {allParts.map(([id, info]) => (
+      <a
+        href={`/thomas/summa/${id}`}
+        class:list={['part-tab', { active: id === part }]}
+        title={info.name}
+      >
+        {id}
+      </a>
+    ))}
+  </nav>
+
+  <!-- Questions List -->
+  <section class="questions-section">
+    <div class="questions-grid">
+      {questions.map((q) => (
+        <a href={getQuestionUrl(part, q.number)} class="question-card">
+          <div class="question-num">Q. {q.number}</div>
+          <div class="question-title">{q.title}</div>
+          <div class="question-meta">{q.articleCount} articles</div>
+        </a>
+      ))}
+    </div>
+  </section>
+</div>
+
+<style>
+  .part-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 2rem;
+  }
+
+  .breadcrumb a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .breadcrumb .sep {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .breadcrumb .current {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  /* Part Header */
+  .part-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .part-label {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--color-text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .part-title {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--color-text);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .part-meta {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  /* Part Tabs */
+  .part-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .part-tab {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--color-text-muted);
+    transition: all 0.2s;
+  }
+
+  .part-tab:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .part-tab.active {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: white;
+  }
+
+  /* Questions Grid */
+  .questions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .question-card {
+    display: block;
+    padding: 1.25rem;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .question-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 2px 8px var(--color-shadow);
+    transform: translateY(-2px);
+  }
+
+  .question-num {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .question-title {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text);
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+  }
+
+  .question-meta {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .part-page {
+      padding: 1rem;
+    }
+
+    .part-title {
+      font-size: 1.5rem;
+    }
+
+    .part-tabs {
+      flex-wrap: wrap;
+    }
+
+    .questions-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

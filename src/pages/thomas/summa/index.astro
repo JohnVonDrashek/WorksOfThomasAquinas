@@ -1,0 +1,138 @@
+---
+import Base from '@/layouts/Base.astro';
+import { SUMMA_PARTS } from '@/lib/summa/parser';
+
+const parts = Object.entries(SUMMA_PARTS);
+---
+
+<Base title="Summa Theologica" description="The Summa Theologica of St. Thomas Aquinas">
+  <div class="summa-home">
+    <header class="summa-header">
+      <h1>Summa Theologica</h1>
+      <p class="subtitle">St. Thomas Aquinas</p>
+      <p class="edition">Benziger Bros. edition, 1947<br>Translated by the Fathers of the English Dominican Province</p>
+    </header>
+
+    <section class="parts-section">
+      <h2>Parts of the Summa</h2>
+      <div class="parts-grid">
+        {parts.map(([id, info]) => (
+          <a href={`/thomas/summa/${id}`} class="part-card">
+            <div class="part-abbrev">{id}</div>
+            <div class="part-latin">{info.latin}</div>
+            <div class="part-name">{info.name}</div>
+            <div class="part-meta">{info.questions} Questions</div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <style>
+    .summa-home {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .summa-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .summa-header h1 {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 500;
+      color: var(--color-accent);
+      margin: 0 0 0.5rem 0;
+    }
+
+    .subtitle {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      color: var(--color-text);
+      margin: 0 0 1rem 0;
+    }
+
+    .edition {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .parts-section h2 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--color-text);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .parts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .part-card {
+      display: block;
+      padding: 1.5rem;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .part-card:hover {
+      border-color: var(--color-accent);
+      box-shadow: 0 4px 12px var(--color-shadow);
+      transform: translateY(-3px);
+    }
+
+    .part-abbrev {
+      font-family: var(--font-sans);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .part-latin {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-style: italic;
+      color: var(--color-text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .part-name {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: 0.5rem;
+    }
+
+    .part-meta {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
+    @media (max-width: 600px) {
+      .summa-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .parts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</Base>
