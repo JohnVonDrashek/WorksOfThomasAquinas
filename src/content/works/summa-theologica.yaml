@@ -3,8 +3,8 @@ latinTitle: Summa Theologiae
 abbreviation: ST
 category: major-theological
 languages:
-  latinEnglish: /thomas/summa/index
-  english: /thomas/english/summa/index
+  latinEnglish: /thomas/summa
+  english: /thomas/english/summa
 source: Benziger Bros. edition, 1947
 translator: Fathers of the English Dominican Province
 parts:
