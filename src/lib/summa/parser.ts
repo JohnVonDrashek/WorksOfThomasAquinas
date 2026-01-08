@@ -137,9 +137,23 @@ export function parseQuestionFile(html: string, part: string, questionNum: numbe
   const articles: SummaArticle[] = [];
 
   // Extract question title from the prologue section
-  const titleMatch = html.match(/<h3[^>]*>.*?TREATISE[^<]*<br>\s*<br>\s*([^<]+)/i)
-    || html.match(/<H3[^>]*>([^<]+)<\/H3>/i);
-  const questionTitle = titleMatch ? cleanText(titleMatch[1]) : `Question ${questionNum}`;
+  // Pattern 1: TREATISE header followed by specific question title
+  // Pattern 2: Direct question title in H3 (may have <br> inside)
+  // Pattern 3: Title after TREATISE with single <br>
+  let questionTitle = `Question ${questionNum}`;
+
+  // Try to find title after TREATISE header (with one or two <br> tags)
+  const treatiseMatch = html.match(/<h3[^>]*>.*?TREATISE[^<]*<br>\s*(?:<br>\s*)?([A-Z][^<]+)/i);
+  if (treatiseMatch) {
+    questionTitle = cleanText(treatiseMatch[1]);
+  } else {
+    // Try to find standalone H3 title (not an article question)
+    // Look for H3 that contains topic-like text (all caps, may include apostrophes, commas, etc.)
+    const h3Match = html.match(/<H3[^>]*>\s*((?:OF\s+)?[A-Z][A-Z\s,'():;]+(?:\([^)]+\))?)\s*<br/i);
+    if (h3Match) {
+      questionTitle = cleanText(h3Match[1]);
+    }
+  }
 
   // Find prologue content (marked with "Out." in comments)
   const prologueMatch = html.match(/<!--Aquin[^>]*Out\.[^>]*-->([\s\S]*?)(?=<!--Aquin|<hr|$)/i);
