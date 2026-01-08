@@ -1,21 +1,26 @@
 ---
 import Base from './Base.astro';
+import SummaNav from '../components/SummaNav.astro';
 
 interface Props {
   title: string;
   description?: string;
+  currentPart: string;
+  currentQuestion?: number;
 }
 
-const { title, description } = Astro.props;
+const { title, description, currentPart, currentQuestion } = Astro.props;
 ---
 
 <Base title={title} description={description}>
-  <article class="legacy-content">
+  <SummaNav currentPart={currentPart} currentQuestion={currentQuestion} />
+
+  <article class="summa-content">
     <slot />
   </article>
 
   <style>
-    .legacy-content {
+    .summa-content {
       background-color: var(--color-bg-card);
       padding: 2rem;
       border-radius: 8px;
@@ -24,7 +29,7 @@ const { title, description } = Astro.props;
     }
 
     @media (max-width: 600px) {
-      .legacy-content {
+      .summa-content {
         padding: 1rem;
         border-radius: 0;
         border-left: none;
@@ -34,10 +39,10 @@ const { title, description } = Astro.props;
     }
 
     /* Typography improvements */
-    .legacy-content :global(h1),
-    .legacy-content :global(h2),
-    .legacy-content :global(h3),
-    .legacy-content :global(h4) {
+    .summa-content :global(h1),
+    .summa-content :global(h2),
+    .summa-content :global(h3),
+    .summa-content :global(h4) {
       font-family: var(--font-heading);
       color: var(--color-text);
       text-align: center;
@@ -45,21 +50,21 @@ const { title, description } = Astro.props;
       letter-spacing: 0.02em;
     }
 
-    .legacy-content :global(h1) {
+    .summa-content :global(h1) {
       font-size: 1.75rem;
       font-weight: 600;
       color: var(--color-accent);
       margin-top: 1rem;
     }
 
-    .legacy-content :global(h2) {
+    .summa-content :global(h2) {
       font-size: 1.5rem;
       font-weight: 500;
       border-bottom: 1px solid var(--color-border);
       padding-bottom: 0.5rem;
     }
 
-    .legacy-content :global(h3) {
+    .summa-content :global(h3) {
       font-size: 1.25rem;
       font-weight: 500;
       color: var(--color-burgundy);
@@ -67,23 +72,23 @@ const { title, description } = Astro.props;
     }
 
     /* Bilingual table styling */
-    .legacy-content :global(table) {
+    .summa-content :global(table) {
       width: 100%;
       border-collapse: collapse;
       margin: 1.5rem 0;
       table-layout: fixed;
     }
 
-    .legacy-content :global(table tr) {
+    .summa-content :global(table tr) {
       border-bottom: 1px solid var(--color-border-light);
     }
 
-    .legacy-content :global(table tr:last-child) {
+    .summa-content :global(table tr:last-child) {
       border-bottom: none;
     }
 
     /* Two-column layout: Latin left, English right */
-    .legacy-content :global(td) {
+    .summa-content :global(td) {
       vertical-align: top;
       padding: 1rem 1.25rem;
       width: 50%;
@@ -91,7 +96,7 @@ const { title, description } = Astro.props;
     }
 
     /* Latin column (left) */
-    .legacy-content :global(td:first-child) {
+    .summa-content :global(td:first-child) {
       font-style: italic;
       color: var(--color-text-muted);
       border-right: 2px solid var(--color-border);
@@ -99,12 +104,12 @@ const { title, description } = Astro.props;
     }
 
     /* English column (right) */
-    .legacy-content :global(td:last-child) {
+    .summa-content :global(td:last-child) {
       padding-left: 1.5rem;
     }
 
     /* Add column headers via CSS */
-    .legacy-content :global(table:first-of-type tr:first-child td:first-child::before) {
+    .summa-content :global(table:first-of-type tr:first-child td:first-child::before) {
       content: 'LATIN';
       display: block;
       font-family: var(--font-heading);
@@ -117,7 +122,7 @@ const { title, description } = Astro.props;
       opacity: 0.8;
     }
 
-    .legacy-content :global(table:first-of-type tr:first-child td:last-child::before) {
+    .summa-content :global(table:first-of-type tr:first-child td:last-child::before) {
       content: 'ENGLISH';
       display: block;
       font-family: var(--font-heading);
@@ -129,35 +134,35 @@ const { title, description } = Astro.props;
       opacity: 0.8;
     }
 
-    /* Bold text styling (often used for objections, replies) */
-    .legacy-content :global(b),
-    .legacy-content :global(strong) {
+    /* Bold text styling (Objections, Replies, etc.) */
+    .summa-content :global(b),
+    .summa-content :global(strong) {
       font-weight: 600;
       color: var(--color-text);
     }
 
-    .legacy-content :global(i b),
-    .legacy-content :global(b i) {
+    .summa-content :global(i b),
+    .summa-content :global(b i) {
       font-family: var(--font-heading);
       font-size: 0.95rem;
       color: var(--color-burgundy);
     }
 
     /* Links */
-    .legacy-content :global(a) {
+    .summa-content :global(a) {
       color: var(--color-accent);
       text-decoration: none;
       transition: color var(--transition-fast);
     }
 
-    .legacy-content :global(a:hover) {
+    .summa-content :global(a:hover) {
       color: var(--color-accent-hover);
       text-decoration: underline;
     }
 
-    /* Navigation blocks (the right-aligned navigation) */
-    .legacy-content :global(p[align="right"]),
-    .legacy-content :global(p[align="Right"]) {
+    /* Navigation blocks (right-aligned navigation in original) */
+    .summa-content :global(p[align="right"]),
+    .summa-content :global(p[align="Right"]) {
       font-family: var(--font-sans);
       font-size: 0.8rem;
       background: var(--color-bg-alt);
@@ -168,22 +173,22 @@ const { title, description } = Astro.props;
       border: 1px solid var(--color-border-light);
     }
 
-    .legacy-content :global(p[align="right"] a),
-    .legacy-content :global(p[align="Right"] a) {
+    .summa-content :global(p[align="right"] a),
+    .summa-content :global(p[align="Right"] a) {
       color: var(--color-navy);
       padding: 0.15rem 0.35rem;
       border-radius: 3px;
       transition: all var(--transition-fast);
     }
 
-    .legacy-content :global(p[align="right"] a:hover),
-    .legacy-content :global(p[align="Right"] a:hover) {
+    .summa-content :global(p[align="right"] a:hover),
+    .summa-content :global(p[align="Right"] a:hover) {
       background: var(--color-highlight);
       text-decoration: none;
     }
 
     /* Horizontal rules */
-    .legacy-content :global(hr) {
+    .summa-content :global(hr) {
       border: none;
       height: 1px;
       background: linear-gradient(to right, transparent, var(--color-border), transparent);
@@ -191,106 +196,74 @@ const { title, description } = Astro.props;
     }
 
     /* Center blocks */
-    .legacy-content :global(center) {
+    .summa-content :global(center) {
       margin: 1rem 0;
       font-style: italic;
       color: var(--color-text-muted);
     }
 
-    /* Blockquotes */
-    .legacy-content :global(blockquote) {
-      margin: 1rem 0;
-      padding-left: 1.5rem;
-      border-left: 3px solid var(--color-accent);
-      font-style: italic;
-    }
-
-    /* Definition lists (used in some works) */
-    .legacy-content :global(dl) {
-      margin: 1rem 0;
-    }
-
-    .legacy-content :global(dt) {
-      font-weight: 600;
-      color: var(--color-accent);
-      margin-top: 1rem;
-    }
-
-    .legacy-content :global(dd) {
-      margin-left: 1.5rem;
-      margin-bottom: 0.5rem;
-      line-height: 1.7;
-    }
-
-    /* Preformatted text */
-    .legacy-content :global(pre) {
-      font-family: var(--font-body);
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-
-    /* Font size overrides (old HTML used FONT tags) */
-    .legacy-content :global(font[size="-1"]) {
+    /* Font size overrides */
+    .summa-content :global(font[size="-1"]) {
       font-size: 0.85rem;
     }
 
-    .legacy-content :global(font[size="-2"]) {
+    .summa-content :global(font[size="-2"]) {
       font-size: 0.75rem;
     }
 
-    .legacy-content :global(font) {
+    .summa-content :global(font) {
       color: inherit !important;
     }
 
     /* Small text */
-    .legacy-content :global(small) {
+    .summa-content :global(small) {
       font-size: 0.875rem;
       color: var(--color-text-muted);
     }
 
     /* Responsive: Stack columns on mobile */
     @media (max-width: 768px) {
-      .legacy-content :global(table) {
+      .summa-content :global(table) {
         display: block;
       }
 
-      .legacy-content :global(tbody) {
+      .summa-content :global(tbody) {
         display: block;
       }
 
-      .legacy-content :global(tr) {
+      .summa-content :global(tr) {
         display: block;
         margin-bottom: 1.5rem;
         padding-bottom: 1.5rem;
         border-bottom: 1px solid var(--color-border);
       }
 
-      .legacy-content :global(tr:last-child) {
+      .summa-content :global(tr:last-child) {
         margin-bottom: 0;
         padding-bottom: 0;
         border-bottom: none;
       }
 
-      .legacy-content :global(td) {
+      .summa-content :global(td) {
         display: block;
         width: 100% !important;
         padding: 0.75rem 0;
         border-right: none !important;
       }
 
-      .legacy-content :global(td:first-child) {
+      .summa-content :global(td:first-child) {
         padding-right: 0;
         padding-bottom: 1rem;
         margin-bottom: 1rem;
         border-bottom: 1px dashed var(--color-border-light);
       }
 
-      .legacy-content :global(td:last-child) {
+      .summa-content :global(td:last-child) {
         padding-left: 0;
       }
 
       /* Mobile column labels */
-      .legacy-content :global(td:first-child::before) {
+      .summa-content :global(td:first-child::before) {
         content: 'LATIN';
         display: block;
         font-family: var(--font-heading);
@@ -302,7 +275,7 @@ const { title, description } = Astro.props;
         margin-bottom: 0.5rem;
       }
 
-      .legacy-content :global(td:last-child::before) {
+      .summa-content :global(td:last-child::before) {
         content: 'ENGLISH';
         display: block;
         font-family: var(--font-heading);
@@ -313,54 +286,52 @@ const { title, description } = Astro.props;
         margin-bottom: 0.5rem;
       }
 
-      /* Remove duplicate labels on first row */
-      .legacy-content :global(table:first-of-type tr:first-child td:first-child::before),
-      .legacy-content :global(table:first-of-type tr:first-child td:last-child::before) {
+      .summa-content :global(table:first-of-type tr:first-child td:first-child::before),
+      .summa-content :global(table:first-of-type tr:first-child td:last-child::before) {
         display: block;
       }
 
-      /* Smaller nav blocks on mobile */
-      .legacy-content :global(p[align="right"]),
-      .legacy-content :global(p[align="Right"]) {
+      .summa-content :global(p[align="right"]),
+      .summa-content :global(p[align="Right"]) {
         font-size: 0.7rem;
         padding: 0.5rem 0.75rem;
       }
     }
 
     /* Dark mode adjustments */
-    [data-theme="dark"] .legacy-content {
+    [data-theme="dark"] .summa-content {
       background-color: var(--color-bg-card);
     }
 
-    [data-theme="dark"] .legacy-content :global(td:first-child) {
+    [data-theme="dark"] .summa-content :global(td:first-child) {
       color: var(--color-text-muted);
       border-right-color: var(--color-border);
     }
 
-    [data-theme="dark"] .legacy-content :global(p[align="right"]),
-    [data-theme="dark"] .legacy-content :global(p[align="Right"]) {
+    [data-theme="dark"] .summa-content :global(p[align="right"]),
+    [data-theme="dark"] .summa-content :global(p[align="Right"]) {
       background: var(--color-bg-alt);
       border-color: var(--color-border);
     }
 
-    [data-theme="dark"] .legacy-content :global(font) {
+    [data-theme="dark"] .summa-content :global(font) {
       color: inherit !important;
     }
 
     /* Print styles */
     @media print {
-      .legacy-content {
+      .summa-content {
         padding: 0;
         border: none;
         box-shadow: none;
       }
 
-      .legacy-content :global(p[align="right"]),
-      .legacy-content :global(p[align="Right"]) {
+      .summa-content :global(p[align="right"]),
+      .summa-content :global(p[align="Right"]) {
         display: none;
       }
 
-      .legacy-content :global(td:first-child) {
+      .summa-content :global(td:first-child) {
         border-right: 1px solid #ccc;
       }
     }

@@ -1,0 +1,239 @@
+---
+interface Props {
+  currentPart: string;
+  currentQuestion?: number;
+}
+
+const { currentPart, currentQuestion } = Astro.props;
+
+// Summa parts metadata
+const parts = [
+  { id: 'FP', name: 'First Part', latin: 'Prima Pars', questions: 119 },
+  { id: 'FS', name: 'First Part of Second Part', latin: 'Prima Secundae', questions: 114 },
+  { id: 'SS', name: 'Second Part of Second Part', latin: 'Secunda Secundae', questions: 189 },
+  { id: 'TP', name: 'Third Part', latin: 'Tertia Pars', questions: 90 },
+  { id: 'XP', name: 'Supplement', latin: 'Supplementum', questions: 99 },
+];
+
+const currentPartData = parts.find(p => p.id === currentPart);
+
+// Calculate prev/next questions
+let prevQuestion: number | null = null;
+let nextQuestion: number | null = null;
+let prevPart: typeof parts[0] | null = null;
+let nextPart: typeof parts[0] | null = null;
+
+if (currentQuestion && currentPartData) {
+  if (currentQuestion > 1) {
+    prevQuestion = currentQuestion - 1;
+  } else {
+    // Go to previous part's last question
+    const partIndex = parts.findIndex(p => p.id === currentPart);
+    if (partIndex > 0) {
+      prevPart = parts[partIndex - 1];
+    }
+  }
+
+  if (currentQuestion < currentPartData.questions) {
+    nextQuestion = currentQuestion + 1;
+  } else {
+    // Go to next part's first question
+    const partIndex = parts.findIndex(p => p.id === currentPart);
+    if (partIndex < parts.length - 1) {
+      nextPart = parts[partIndex + 1];
+    }
+  }
+}
+
+// Format question number with leading zeros for file paths
+const formatQ = (n: number) => String(n).padStart(3, '0');
+---
+
+<nav class="summa-nav" aria-label="Summa navigation">
+  <!-- Breadcrumb -->
+  <div class="summa-breadcrumb">
+    <a href="/thomas/summa">Summa Theologica</a>
+    <span class="separator">&rsaquo;</span>
+    <a href={`/thomas/summa/${currentPart}`}>{currentPartData?.name || currentPart}</a>
+    {currentQuestion && (
+      <>
+        <span class="separator">&rsaquo;</span>
+        <span class="current">Question {currentQuestion}</span>
+      </>
+    )}
+  </div>
+
+  <!-- Parts navigation -->
+  <div class="summa-parts">
+    {parts.map(part => (
+      <a
+        href={`/thomas/summa/${part.id}`}
+        class:list={['part-link', { active: part.id === currentPart }]}
+        title={part.latin}
+      >
+        {part.id}
+      </a>
+    ))}
+  </div>
+
+  <!-- Question navigation (if viewing a question) -->
+  {currentQuestion && currentPartData && (
+    <div class="summa-question-nav">
+      <div class="nav-prev">
+        {prevQuestion ? (
+          <a href={`/thomas/summa/${currentPart}/${currentPart}${formatQ(prevQuestion)}`}>
+            &larr; Q. {prevQuestion}
+          </a>
+        ) : prevPart ? (
+          <a href={`/thomas/summa/${prevPart.id}/${prevPart.id}${formatQ(prevPart.questions)}`}>
+            &larr; {prevPart.id} Q. {prevPart.questions}
+          </a>
+        ) : null}
+      </div>
+      <div class="nav-current">
+        <strong>Question {currentQuestion}</strong>
+        <span class="of-total">of {currentPartData.questions}</span>
+      </div>
+      <div class="nav-next">
+        {nextQuestion ? (
+          <a href={`/thomas/summa/${currentPart}/${currentPart}${formatQ(nextQuestion)}`}>
+            Q. {nextQuestion} &rarr;
+          </a>
+        ) : nextPart ? (
+          <a href={`/thomas/summa/${nextPart.id}/${nextPart.id}001`}>
+            {nextPart.id} Q. 1 &rarr;
+          </a>
+        ) : null}
+      </div>
+    </div>
+  )}
+</nav>
+
+<style>
+  .summa-nav {
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .summa-breadcrumb {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .summa-breadcrumb a {
+    color: var(--color-accent);
+  }
+
+  .summa-breadcrumb .separator {
+    margin: 0 0.5rem;
+    color: var(--color-border);
+  }
+
+  .summa-breadcrumb .current {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .summa-parts {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+  }
+
+  .part-link {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-light);
+    color: var(--color-text-muted);
+    transition: all var(--transition-fast);
+  }
+
+  .part-link:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .part-link.active {
+    background: var(--color-accent);
+    color: white;
+    border-color: var(--color-accent);
+  }
+
+  .summa-question-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .nav-prev, .nav-next {
+    flex: 1;
+  }
+
+  .nav-prev {
+    text-align: left;
+  }
+
+  .nav-next {
+    text-align: right;
+  }
+
+  .nav-current {
+    text-align: center;
+    font-family: var(--font-heading);
+  }
+
+  .nav-current .of-total {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    font-weight: normal;
+    margin-left: 0.25rem;
+  }
+
+  .summa-question-nav a {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background var(--transition-fast);
+  }
+
+  .summa-question-nav a:hover {
+    background: var(--color-highlight);
+    text-decoration: none;
+  }
+
+  @media (max-width: 600px) {
+    .summa-nav {
+      padding: 0.75rem;
+    }
+
+    .summa-breadcrumb {
+      font-size: 0.75rem;
+    }
+
+    .part-link {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .summa-question-nav {
+      font-size: 0.8rem;
+    }
+
+    .nav-current .of-total {
+      display: none;
+    }
+  }
+</style>

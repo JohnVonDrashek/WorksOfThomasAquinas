@@ -1,0 +1,143 @@
+---
+import LegacyContent from '../../layouts/LegacyContent.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export const prerender = true;
+
+// Generate static paths for all legacy HTML files
+export async function getStaticPaths() {
+  const legacyDir = path.join(process.cwd(), 'public/thomas');
+  const pathSet = new Set<string>();
+
+  function walkDir(dir: string, basePath: string = '') {
+    if (!fs.existsSync(dir)) return;
+
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      const relativePath = basePath ? `${basePath}/${entry.name}` : entry.name;
+
+      if (entry.isDirectory()) {
+        // For Stage 1, only wrap root-level files - skip all subdirectories
+        // They'll be served directly as static files from public/
+        // Stage 2 will handle summa, english, etc.
+        continue;
+      } else if (entry.name.endsWith('.html') || entry.name.endsWith('.htm')) {
+        // Skip CLAUDE.md and hidden files
+        if (entry.name.startsWith('.') || entry.name === 'CLAUDE.md') continue;
+
+        // Handle index files specially - they represent the directory
+        if (entry.name === 'index.html' || entry.name === 'index.htm') {
+          // For index files, the path is just the directory (or root if at top level)
+          if (basePath) {
+            pathSet.add(basePath);
+          }
+        } else {
+          // Only generate clean URLs (without extension)
+          const pathWithoutExt = relativePath.replace(/\.(html|htm)$/, '');
+          pathSet.add(pathWithoutExt);
+        }
+      } else if (!entry.name.includes('.') && !entry.name.startsWith('.')) {
+        // Handle files without extensions (some legacy files don't have .html)
+        // Only if there isn't already an .html/.htm version
+        const htmlVersion = relativePath + '.html';
+        const htmVersion = relativePath + '.htm';
+        if (!fs.existsSync(path.join(dir, entry.name + '.html')) &&
+            !fs.existsSync(path.join(dir, entry.name + '.htm'))) {
+          pathSet.add(relativePath);
+        }
+      }
+    }
+  }
+
+  walkDir(legacyDir);
+
+  // Convert Set to paths array, add undefined for /thomas/
+  const paths = Array.from(pathSet).map(p => ({ params: { path: p } }));
+  paths.push({ params: { path: undefined } });
+
+  return paths;
+}
+
+const { path: urlPath } = Astro.params;
+
+// Resolve the file path
+let filePath: string;
+let htmlContent: string = '';
+let title = 'Thomas Aquinas';
+
+if (!urlPath) {
+  // /thomas/ -> index.html
+  filePath = path.join(process.cwd(), 'public/thomas/index.html');
+} else {
+  const basePath = path.join(process.cwd(), 'public/thomas', urlPath);
+
+  // Check if path exists and is a file (not directory)
+  const isFile = (p: string) => {
+    try {
+      return fs.existsSync(p) && fs.statSync(p).isFile();
+    } catch {
+      return false;
+    }
+  };
+
+  // Try different file resolutions
+  if (isFile(basePath + '.html')) {
+    filePath = basePath + '.html';
+  } else if (isFile(basePath + '.htm')) {
+    filePath = basePath + '.htm';
+  } else if (isFile(path.join(basePath, 'index.html'))) {
+    filePath = path.join(basePath, 'index.html');
+  } else if (isFile(basePath)) {
+    filePath = basePath;
+  } else {
+    filePath = basePath + '.html'; // fallback
+  }
+}
+
+// Read and process the HTML file
+if (fs.existsSync(filePath)) {
+  const rawHtml = fs.readFileSync(filePath, 'utf-8');
+
+  // Extract title from <title> tag
+  const titleMatch = rawHtml.match(/<title[^>]*>([^<]+)<\/title>/i);
+  if (titleMatch) {
+    title = titleMatch[1].trim();
+  }
+
+  // Extract body content
+  const bodyMatch = rawHtml.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  if (bodyMatch) {
+    htmlContent = bodyMatch[1];
+  } else {
+    // If no body tag, use the whole content
+    htmlContent = rawHtml;
+  }
+
+  // Clean up old style tags and attributes that conflict with our modern styling
+  htmlContent = htmlContent
+    // Remove inline bgcolor attributes
+    .replace(/\s*bgcolor="[^"]*"/gi, '')
+    // Remove old style tags embedded in body
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    // Fix relative links to work from new URL structure
+    .replace(/href="\.\.\/([^"]+)"/gi, 'href="/thomas/$1"')
+    .replace(/href="([^/"#][^"#]*)"/gi, (match, p1) => {
+      // Handle relative links within same directory
+      if (!p1.startsWith('http') && !p1.startsWith('/') && !p1.startsWith('#')) {
+        const currentDir = urlPath ? path.dirname(urlPath) : '';
+        const newPath = currentDir ? `${currentDir}/${p1}` : p1;
+        return `href="/thomas/${newPath}"`;
+      }
+      return match;
+    });
+} else {
+  htmlContent = '<p>Content not found.</p>';
+}
+---
+
+<LegacyContent title={title}>
+  <Fragment set:html={htmlContent} />
+</LegacyContent>
