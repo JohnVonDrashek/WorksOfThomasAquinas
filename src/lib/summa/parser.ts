@@ -100,6 +100,50 @@ function extractBilingualContent(html: string): { latin: string; english: string
 }
 
 /**
+ * Extract bilingual content for objections, handling mid-row markers
+ * Some HTML has markers between Latin and English columns within a row
+ */
+function extractBilingualContentWithContext(
+  capturedContent: string,
+  fullHtml: string,
+  markerPattern: string
+): { latin: string; english: string } {
+  // If captured content starts with <tr>, we have the full row - use standard extraction
+  if (capturedContent.trim().startsWith('<tr')) {
+    return extractBilingualContent(capturedContent);
+  }
+
+  // If captured content starts with <td> or <p>, marker was mid-row
+  // We need to look backwards in fullHtml to find the Latin column in the SAME row
+  if (capturedContent.trim().match(/^<(?:td|p|\n)/i)) {
+    // Find the marker position in the full HTML
+    const markerMatch = fullHtml.match(new RegExp(markerPattern, 'i'));
+    if (markerMatch && markerMatch.index !== undefined) {
+      // Look backwards for the start of the current <tr>
+      const beforeMarker = fullHtml.substring(0, markerMatch.index);
+
+      // Find the last <tr> start before the marker, then get the first <td> content from that row
+      const lastTrIndex = beforeMarker.lastIndexOf('<tr');
+      if (lastTrIndex !== -1) {
+        const rowStart = beforeMarker.substring(lastTrIndex);
+        // Extract the first <td> content (Latin) from this row segment
+        const latinTdMatch = rowStart.match(/<td[^>]*>([\s\S]*?)(?=<td|$)/i);
+        if (latinTdMatch) {
+          const latin = cleanText(latinTdMatch[1]);
+          const english = cleanText(capturedContent);
+          if (latin && english) {
+            return { latin, english };
+          }
+        }
+      }
+    }
+  }
+
+  // Fall back to standard extraction
+  return extractBilingualContent(capturedContent);
+}
+
+/**
  * Clean HTML text: remove tags, decode entities, normalize whitespace
  */
 function cleanText(html: string): string {
@@ -199,10 +243,10 @@ export function parseQuestionFile(html: string, part: string, questionNum: numbe
     ));
     for (const objMatch of objMatches) {
       const objNum = parseInt(objMatch[1], 10);
-      objections.push({
-        number: objNum,
-        ...extractBilingualContent(objMatch[2]),
-      });
+      // Use context-aware extraction to handle mid-row markers
+      const markerPattern = `<!--Aquin[^>]*A\\[${articleNum}\\]\\s*Obj\\.\\s*${objNum}[^>]*-->`;
+      const content = extractBilingualContentWithContext(objMatch[2], html, markerPattern);
+      objections.push({ number: objNum, ...content });
     }
 
     // Extract Sed Contra (On the contrary)
@@ -271,10 +315,10 @@ export function parseQuestionFile(html: string, part: string, questionNum: numbe
     ));
     for (const objMatch of objMatches) {
       const objNum = parseInt(objMatch[1], 10);
-      objections.push({
-        number: objNum,
-        ...extractBilingualContent(objMatch[2]),
-      });
+      // Use context-aware extraction to handle mid-row markers
+      const markerPattern = `<!--Aquin[^>]*A\\[${articleNum}\\]\\s*Obj\\.\\s*${objNum}[^>]*-->`;
+      const content = extractBilingualContentWithContext(objMatch[2], html, markerPattern);
+      objections.push({ number: objNum, ...content });
     }
 
     // Extract Sed Contra (On the contrary)
