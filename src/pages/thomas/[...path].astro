@@ -20,9 +20,13 @@ export async function getStaticPaths() {
       const relativePath = basePath ? `${basePath}/${entry.name}` : entry.name;
 
       if (entry.isDirectory()) {
-        // For Stage 1, only wrap root-level files - skip all subdirectories
-        // They'll be served directly as static files from public/
-        // Stage 2 will handle summa, english, etc.
+        // Skip summa (has dedicated route), hidden dirs, and problematic dirs
+        const skipDirs = ['summa', '.', 'CLAUDE.md'];
+        if (skipDirs.some(d => entry.name.startsWith(d))) {
+          continue;
+        }
+        // Walk english and PsalmsAquinas directories
+        walkDir(fullPath, relativePath);
         continue;
       } else if (entry.name.endsWith('.html') || entry.name.endsWith('.htm')) {
         // Skip CLAUDE.md and hidden files
@@ -37,6 +41,13 @@ export async function getStaticPaths() {
         } else {
           // Only generate clean URLs (without extension)
           const pathWithoutExt = relativePath.replace(/\.(html|htm)$/, '');
+
+          // Skip if there's an extensionless file with the same name (would conflict in dist)
+          const extensionlessPath = path.join(dir, entry.name.replace(/\.(html|htm)$/, ''));
+          if (fs.existsSync(extensionlessPath) && fs.statSync(extensionlessPath).isFile()) {
+            continue; // Skip - let the static file be served directly
+          }
+
           pathSet.add(pathWithoutExt);
         }
       } else if (!entry.name.includes('.') && !entry.name.startsWith('.')) {
