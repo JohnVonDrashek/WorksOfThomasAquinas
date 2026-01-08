@@ -1,0 +1,77 @@
+---
+import LegacyContent from '@/layouts/LegacyContent.astro';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
+
+// Read the legacy index.html content
+const legacyPath = join(process.cwd(), 'public/thomas/index.html');
+let legacyContent = '';
+
+try {
+  const html = await readFile(legacyPath, 'utf-8');
+  // Extract body content between <body> and </body>
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  if (bodyMatch) {
+    legacyContent = bodyMatch[1];
+  } else {
+    legacyContent = html;
+  }
+} catch (e) {
+  legacyContent = '<p>Legacy content could not be loaded.</p>';
+}
+---
+
+<LegacyContent title="Index" description="Complete index of St. Thomas Aquinas' works in Latin and English">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">Home</a></li>
+      <li aria-current="page">Legacy Index</li>
+    </ol>
+  </nav>
+
+  <div class="legacy-notice">
+    <p>
+      <strong>Note:</strong> This is the original site index. For an improved browsing experience,
+      visit the <a href="/works/">new Works page</a>.
+    </p>
+  </div>
+
+  <Fragment set:html={legacyContent} />
+
+  <style>
+    .breadcrumb {
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+    }
+
+    .breadcrumb ol {
+      display: flex;
+      flex-wrap: wrap;
+      list-style: none;
+      gap: 0.5rem;
+    }
+
+    .breadcrumb li:not(:last-child)::after {
+      content: '/';
+      margin-left: 0.5rem;
+      color: var(--color-text-muted);
+    }
+
+    .breadcrumb li[aria-current="page"] {
+      color: var(--color-text-muted);
+    }
+
+    .legacy-notice {
+      background-color: #e8f4e8;
+      border: 1px solid #b8d4b8;
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .legacy-notice p {
+      margin: 0;
+    }
+  </style>
+</LegacyContent>

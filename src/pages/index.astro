@@ -1,0 +1,153 @@
+---
+import Base from '@/layouts/Base.astro';
+---
+
+<Base title="Home">
+  <div class="hero">
+    <h1>Works of St. Thomas Aquinas</h1>
+    <p class="subtitle">Latin texts with English translations</p>
+  </div>
+
+  <section class="intro">
+    <p>
+      This collection presents the writings of St. Thomas Aquinas (1225-1274),
+      the Dominican friar, philosopher, and theologian whose works have profoundly
+      shaped Catholic theology and Western philosophy.
+    </p>
+    <p>
+      Originally compiled by <a href="http://www.dhspriory.org/kenny">Fr. Joseph Kenny, O.P.</a> (1936-2013),
+      this archive provides access to Latin texts alongside English translations.
+    </p>
+  </section>
+
+  <section class="categories">
+    <h2>Browse by Category</h2>
+
+    <div class="category-grid">
+      <a href="/works/?category=major-theological" class="category-card">
+        <h3>Major Theological Works</h3>
+        <p>Summa Theologica, Summa Contra Gentiles</p>
+      </a>
+
+      <a href="/works/?category=quaestiones-disputatae" class="category-card">
+        <h3>Quaestiones Disputatae</h3>
+        <p>De veritate, De potentia, De malo</p>
+      </a>
+
+      <a href="/works/?category=opuscula" class="category-card">
+        <h3>Opuscula</h3>
+        <p>De ente et essentia, De regno</p>
+      </a>
+
+      <a href="/works/?category=aristotle-commentary" class="category-card">
+        <h3>Aristotle Commentaries</h3>
+        <p>Physics, Ethics, Metaphysics</p>
+      </a>
+
+      <a href="/works/?category=biblical-commentary" class="category-card">
+        <h3>Biblical Commentaries</h3>
+        <p>Psalms, Job, Gospels, Epistles</p>
+      </a>
+
+      <a href="/works/?category=popular" class="category-card">
+        <h3>Popular Works</h3>
+        <p>Creed, Our Father, Prayers</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="quick-links">
+    <h2>Quick Access</h2>
+    <ul>
+      <li><a href="/thomas/summa/index.html">Summa Theologica</a> &mdash; Complete text in Latin &amp; English</li>
+      <li><a href="/thomas/ContraGentiles.htm">Summa Contra Gentiles</a> &mdash; Latin &amp; English</li>
+      <li><a href="/thomas/">Legacy Index</a> &mdash; Original site index</li>
+    </ul>
+  </section>
+
+  <style>
+    .hero {
+      text-align: center;
+      padding: 2rem 0 3rem;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      color: var(--color-text-muted);
+      font-style: italic;
+      font-size: 1.125rem;
+    }
+
+    .intro {
+      margin-bottom: 2.5rem;
+    }
+
+    .categories {
+      margin-bottom: 2.5rem;
+    }
+
+    .categories h2 {
+      margin-bottom: 1rem;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .category-card {
+      display: block;
+      padding: 1.25rem;
+      background-color: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+
+    .category-card:hover {
+      border-color: var(--color-link);
+      text-decoration: none;
+    }
+
+    .category-card h3 {
+      font-size: 1.125rem;
+      margin-bottom: 0.25rem;
+      color: var(--color-text);
+    }
+
+    .category-card p {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-bottom: 0;
+    }
+
+    .quick-links h2 {
+      margin-bottom: 1rem;
+    }
+
+    .quick-links ul {
+      list-style: none;
+    }
+
+    .quick-links li {
+      margin-bottom: 0.5rem;
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .quick-links li::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      color: var(--color-text-muted);
+    }
+  </style>
+</Base>

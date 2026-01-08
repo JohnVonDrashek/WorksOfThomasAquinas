@@ -1,0 +1,103 @@
+---
+import Base from './Base.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<Base title={title} description={description}>
+  <div class="legacy-content">
+    <slot />
+  </div>
+
+  <style>
+    .legacy-content {
+      background-color: #fffef5;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border: 1px solid var(--color-border);
+    }
+
+    .legacy-content :global(table) {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .legacy-content :global(td) {
+      vertical-align: top;
+      padding: 0.5rem;
+    }
+
+    .legacy-content :global(dl) {
+      margin: 0;
+    }
+
+    .legacy-content :global(dd) {
+      margin-left: 1.5rem;
+      margin-bottom: 0.35rem;
+      line-height: 1.5;
+    }
+
+    .legacy-content :global(b) {
+      display: block;
+      margin-top: 1rem;
+      margin-bottom: 0.25rem;
+      font-size: 1.1rem;
+    }
+
+    .legacy-content :global(dd:first-child b) {
+      margin-top: 0;
+    }
+
+    .legacy-content :global(a) {
+      color: var(--color-link);
+    }
+
+    .legacy-content :global(a:hover) {
+      color: var(--color-link-hover);
+    }
+
+    .legacy-content :global(hr) {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      margin: 1.5rem 0;
+    }
+
+    .legacy-content :global(h2) {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .legacy-content :global(blockquote) {
+      margin: 0;
+    }
+
+    .legacy-content :global(center) {
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .legacy-content :global(table) {
+        display: block;
+      }
+
+      .legacy-content :global(tbody) {
+        display: block;
+      }
+
+      .legacy-content :global(tr) {
+        display: block;
+      }
+
+      .legacy-content :global(td) {
+        display: block;
+        padding: 0;
+        margin-bottom: 1.5rem;
+      }
+    }
+  </style>
+</Base>

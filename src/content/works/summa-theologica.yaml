@@ -1,0 +1,25 @@
+title: Summa Theologica
+latinTitle: Summa Theologiae
+abbreviation: ST
+category: major-theological
+languages:
+  latinEnglish: /thomas/summa/index.html
+  english: /thomas/english/summa/index.html
+source: Benziger Bros. edition, 1947
+translator: Fathers of the English Dominican Province
+parts:
+  - id: FP
+    title: First Part (QQ. 1-119)
+    path: /thomas/summa/FP.html
+  - id: FS
+    title: First Part of the Second Part (QQ. 1-114)
+    path: /thomas/summa/FS.html
+  - id: SS
+    title: Second Part of the Second Part (QQ. 1-189)
+    path: /thomas/summa/SS.html
+  - id: TP
+    title: Third Part (QQ. 1-90)
+    path: /thomas/summa/TP.html
+  - id: XP
+    title: Supplement (QQ. 1-99)
+    path: /thomas/summa/XP.html

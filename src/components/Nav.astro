@@ -1,0 +1,61 @@
+---
+const currentPath = Astro.url.pathname;
+
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/works/', label: 'Works' },
+  { href: '/thomas/', label: 'Legacy Index' },
+];
+---
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand">Works of Thomas Aquinas</a>
+    <ul class="nav-links">
+      {links.map(({ href, label }) => (
+        <li>
+          <a
+            href={href}
+            class:list={[{ active: currentPath === href || (href !== '/' && currentPath.startsWith(href)) }]}
+          >
+            {label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .nav {
+    background-color: var(--color-bg-alt);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1rem;
+  }
+
+  .nav-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .nav-brand {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+
+  .nav-links a.active {
+    font-weight: 600;
+    text-decoration: underline;
+  }
+</style>

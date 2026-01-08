@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Auto-generated CLAUDE.md files (only keep root CLAUDE.md)
+src/**/CLAUDE.md
+scripts/**/CLAUDE.md
+public/**/CLAUDE.md
+docs/**/CLAUDE.md
+.github/**/CLAUDE.md

@@ -1,0 +1,242 @@
+---
+import Base from '@/layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const works = await getCollection('works');
+  return works.map((work) => ({
+    params: { id: work.id },
+    props: { work },
+  }));
+}
+
+const { work } = Astro.props;
+const { title, latinTitle, category, languages, parts, source, translator } = work.data;
+
+const categoryLabels: Record<string, string> = {
+  'major-theological': 'Major Theological Works',
+  'quaestiones-disputatae': 'Quaestiones Disputatae',
+  'opuscula': 'Opuscula',
+  'aristotle-commentary': 'Commentaries on Aristotle',
+  'biblical-commentary': 'Biblical Commentaries',
+  'other-commentary': 'Other Commentaries',
+  'popular': 'Popular Works',
+};
+---
+
+<Base title={title} description={`${title} by St. Thomas Aquinas - ${latinTitle || ''}`}>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">Home</a></li>
+      <li><a href="/works/">Works</a></li>
+      <li><a href={`/works/?category=${category}`}>{categoryLabels[category]}</a></li>
+      <li aria-current="page">{title}</li>
+    </ol>
+  </nav>
+
+  <article class="work-detail">
+    <header>
+      <h1>{title}</h1>
+      {latinTitle && latinTitle !== title && (
+        <p class="latin-title">{latinTitle}</p>
+      )}
+      <p class="category">{categoryLabels[category]}</p>
+    </header>
+
+    {(source || translator) && (
+      <section class="metadata">
+        {source && <p><strong>Source:</strong> {source}</p>}
+        {translator && <p><strong>Translator:</strong> {translator}</p>}
+      </section>
+    )}
+
+    <section class="access">
+      <h2>Read the Text</h2>
+      <div class="access-links">
+        {languages.latinEnglish && (
+          <a href={languages.latinEnglish} class="access-link primary">
+            <span class="link-title">Latin &amp; English</span>
+            <span class="link-desc">Bilingual edition with original Latin</span>
+          </a>
+        )}
+        {languages.english && (
+          <a href={languages.english} class="access-link">
+            <span class="link-title">English Only</span>
+            <span class="link-desc">English translation</span>
+          </a>
+        )}
+      </div>
+    </section>
+
+    {parts && parts.length > 0 && (
+      <section class="parts">
+        <h2>Parts</h2>
+        <ul class="parts-list">
+          {parts.map((part) => (
+            <li>
+              <a href={part.path || languages.latinEnglish}>
+                <strong>{part.id}:</strong> {part.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <footer class="work-footer">
+      <a href="/works/">&larr; Back to all works</a>
+    </footer>
+  </article>
+
+  <style>
+    .breadcrumb {
+      margin-bottom: 2rem;
+      font-size: 0.875rem;
+    }
+
+    .breadcrumb ol {
+      display: flex;
+      flex-wrap: wrap;
+      list-style: none;
+      gap: 0.5rem;
+    }
+
+    .breadcrumb li:not(:last-child)::after {
+      content: '/';
+      margin-left: 0.5rem;
+      color: var(--color-text-muted);
+    }
+
+    .breadcrumb li[aria-current="page"] {
+      color: var(--color-text-muted);
+    }
+
+    .work-detail header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .work-detail h1 {
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .latin-title {
+      font-style: italic;
+      color: var(--color-text-muted);
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .category {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+    }
+
+    .metadata {
+      background-color: var(--color-bg-alt);
+      padding: 1rem;
+      border-radius: 4px;
+      margin-bottom: 2rem;
+    }
+
+    .metadata p {
+      margin-bottom: 0.25rem;
+    }
+
+    .metadata p:last-child {
+      margin-bottom: 0;
+    }
+
+    .access {
+      margin-bottom: 2rem;
+    }
+
+    .access h2 {
+      margin-bottom: 1rem;
+    }
+
+    .access-links {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    @media (min-width: 600px) {
+      .access-links {
+        flex-direction: row;
+      }
+    }
+
+    .access-link {
+      display: block;
+      padding: 1.25rem;
+      background-color: var(--color-bg-alt);
+      border: 2px solid var(--color-border);
+      border-radius: 4px;
+      text-decoration: none;
+      transition: border-color 0.2s, background-color 0.2s;
+      flex: 1;
+    }
+
+    .access-link:hover {
+      border-color: var(--color-link);
+      text-decoration: none;
+    }
+
+    .access-link.primary {
+      border-color: var(--color-link);
+      background-color: #fdf8f0;
+    }
+
+    .link-title {
+      display: block;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 0.25rem;
+    }
+
+    .link-desc {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+    }
+
+    .parts {
+      margin-bottom: 2rem;
+    }
+
+    .parts h2 {
+      margin-bottom: 1rem;
+    }
+
+    .parts-list {
+      list-style: none;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .parts-list li {
+      padding: 0.75rem 1rem;
+      background-color: var(--color-bg-alt);
+      border-radius: 4px;
+    }
+
+    .parts-list a {
+      text-decoration: none;
+    }
+
+    .parts-list a:hover {
+      text-decoration: underline;
+    }
+
+    .work-footer {
+      padding-top: 2rem;
+      border-top: 1px solid var(--color-border);
+    }
+  </style>
+</Base>

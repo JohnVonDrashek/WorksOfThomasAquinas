@@ -1,0 +1,149 @@
+---
+import Base from '@/layouts/Base.astro';
+import WorkCard from '@/components/WorkCard.astro';
+import WorksFilter from '@/components/WorksFilter.astro';
+import { getCollection } from 'astro:content';
+
+const works = await getCollection('works');
+
+const categoryOrder = [
+  'major-theological',
+  'quaestiones-disputatae',
+  'opuscula',
+  'aristotle-commentary',
+  'biblical-commentary',
+  'other-commentary',
+  'popular',
+];
+
+const categoryLabels: Record<string, string> = {
+  'major-theological': 'Major Theological Works',
+  'quaestiones-disputatae': 'Quaestiones Disputatae',
+  'opuscula': 'Opuscula',
+  'aristotle-commentary': 'Commentaries on Aristotle',
+  'biblical-commentary': 'Biblical Commentaries',
+  'other-commentary': 'Other Commentaries',
+  'popular': 'Popular Works',
+};
+
+const categoryLabelsShort: Record<string, string> = {
+  'major-theological': 'Major',
+  'quaestiones-disputatae': 'Quaestiones',
+  'opuscula': 'Opuscula',
+  'aristotle-commentary': 'Aristotle',
+  'biblical-commentary': 'Biblical',
+  'other-commentary': 'Other',
+  'popular': 'Popular',
+};
+
+const worksByCategory = works.reduce((acc, work) => {
+  const category = work.data.category;
+  if (!acc[category]) acc[category] = [];
+  acc[category].push(work);
+  return acc;
+}, {} as Record<string, typeof works>);
+
+// Sort each category's works alphabetically by title
+for (const category of Object.keys(worksByCategory)) {
+  worksByCategory[category].sort((a, b) => a.data.title.localeCompare(b.data.title));
+}
+
+// Build categories for filter
+const filterCategories = categoryOrder
+  .filter(cat => worksByCategory[cat]?.length > 0)
+  .map(cat => ({
+    id: cat,
+    label: categoryLabelsShort[cat],
+    count: worksByCategory[cat].length,
+  }));
+---
+
+<Base title="Works" description="Complete list of St. Thomas Aquinas' works available in Latin and English">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">Home</a></li>
+      <li aria-current="page">Works</li>
+    </ol>
+  </nav>
+
+  <h1>Works of St. Thomas Aquinas</h1>
+  <p class="intro">
+    Browse the complete collection of available texts. Works marked "Latin &amp; English" present
+    the original Latin alongside English translation.
+  </p>
+
+  <WorksFilter categories={filterCategories} />
+
+  {categoryOrder.map((category) => {
+    const categoryWorks = worksByCategory[category];
+    if (!categoryWorks || categoryWorks.length === 0) return null;
+
+    return (
+      <section class="category-section" id={category}>
+        <h2>{categoryLabels[category]}</h2>
+        <div class="works-grid">
+          {categoryWorks.map((work) => (
+            <WorkCard
+              id={work.id}
+              title={work.data.title}
+              latinTitle={work.data.latinTitle}
+              category={work.data.category}
+              latinEnglishPath={work.data.languages.latinEnglish}
+              englishPath={work.data.languages.english}
+              restricted={work.data.restricted}
+            />
+          ))}
+        </div>
+      </section>
+    );
+  })}
+
+  <style>
+    .breadcrumb {
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+    }
+
+    .breadcrumb ol {
+      display: flex;
+      flex-wrap: wrap;
+      list-style: none;
+      gap: 0.5rem;
+    }
+
+    .breadcrumb li:not(:last-child)::after {
+      content: '/';
+      margin-left: 0.5rem;
+      color: var(--color-text-muted);
+    }
+
+    .breadcrumb li[aria-current="page"] {
+      color: var(--color-text-muted);
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+
+    .intro {
+      color: var(--color-text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .category-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .category-section h2 {
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+  </style>
+</Base>
