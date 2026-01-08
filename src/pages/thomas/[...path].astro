@@ -139,7 +139,7 @@ if (fs.existsSync(filePath)) {
       const cleanPath = p1.replace(/\.(html?)(#.*)?$/i, '$2');
       return `href="/thomas/${cleanPath}"`;
     })
-    .replace(/href="([^/"#][^"#]*)"/gi, (match, p1) => {
+    .replace(/href="([^/"#][^"]*)"/gi, (match, p1) => {
       // Handle relative links within same directory
       if (!p1.startsWith('http') && !p1.startsWith('/') && !p1.startsWith('#')) {
         const currentDir = urlPath ? path.dirname(urlPath) : '';
