@@ -142,16 +142,25 @@ export function parseQuestionFile(html: string, part: string, questionNum: numbe
   // Pattern 3: Title after TREATISE with single <br>
   let questionTitle = `Question ${questionNum}`;
 
-  // Try to find title after TREATISE header (with one or two <br> tags)
-  const treatiseMatch = html.match(/<h3[^>]*>.*?TREATISE[^<]*<br>\s*(?:<br>\s*)?([A-Z][^<]+)/i);
-  if (treatiseMatch) {
-    questionTitle = cleanText(treatiseMatch[1]);
+  // Try to find title after TREATISE header
+  // Pattern handles: TREATISE...<br>TITLE or TREATISE...(Question [N])<br><br>TITLE
+  // Special pattern for Q1: TREATISE ON SACRED DOCTRINE (Question [1])<br><br>THE NATURE...
+  const treatiseWithQuestionMatch = html.match(/TREATISE[^<]*\(Question[^)]*\)<br>\s*(?:<br>\s*)?([A-Z][A-Z\s,'():;\-]+(?:\([^)]+\))?)/i);
+  if (treatiseWithQuestionMatch) {
+    questionTitle = cleanText(treatiseWithQuestionMatch[1]);
   } else {
+    // Standard TREATISE pattern without (Question [N])
+    const treatiseMatch = html.match(/<h3[^>]*>.*?TREATISE[^<]*<br>\s*(?:<br>\s*)?([A-Z][A-Z\s,'():;\-]+(?:\([^)]+\))?)/i);
+    if (treatiseMatch && !treatiseMatch[1].match(/^PRIMA\s+/i)) {
+      questionTitle = cleanText(treatiseMatch[1]);
+    } else {
     // Try to find standalone H3 title (not an article question)
-    // Look for H3 that contains topic-like text (all caps, may include apostrophes, commas, etc.)
-    const h3Match = html.match(/<H3[^>]*>\s*((?:OF\s+)?[A-Z][A-Z\s,'():;]+(?:\([^)]+\))?)\s*<br/i);
+    // Look for H3 that contains topic-like text (all caps, may include apostrophes, hyphens, em dashes, etc.)
+    // Note: &#8212; is em dash, \u2014 is its unicode form
+    const h3Match = html.match(/<H3[^>]*>\s*((?:OF\s+)?[A-Z][A-Z\s,'():;\-]+(?:&#8212;[A-Z\s,'():;\-]+)?(?:\([^)]+\))?)\s*(?:<br|<\/br|\n)/i);
     if (h3Match) {
       questionTitle = cleanText(h3Match[1]);
+    }
     }
   }
 
